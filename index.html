@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>刑省略</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/zero-md@3"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        #login-form { text-align: center; margin-top: 100px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        #secret-content { display: none; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="login-form">
+        <h2>パスワードを入力してください</h2>
+        <input type="password" id="pass">
+        <button onclick="unlock()">閲覧する</button>
+        <p id="err" style="color: red;"></p>
+    </div>
+
+    <div id="secret-content">
+        <h1>📖 エクストラ徒然</h1>
+        <p>公開したいノートへのリンクをここに並べます</p>
+        <ul>
+            <li><a href="#" onclick="showNote('posts/diary2025.md')">2025年12月19日の日記</a></li>
+        </ul>
+        <hr>
+        <zero-md id="viewer" src=""></zero-md>
+    </div>
+
+    <script>
+        function unlock() {
+            if (document.getElementById('pass').value === "mayu123") { // パスワード
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('secret-content').style.display = 'block';
+            } else {
+                document.getElementById('err').innerText = "パスワードが違います";
+            }
+        }
+        function showNote(path) {
+            document.getElementById('viewer').setAttribute('src', path);
+        }
+    </script>
+</body>
+</html>
