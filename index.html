@@ -5,11 +5,46 @@
     <title>刑省略</title>
     <script type="module" src="https://cdn.jsdelivr.net/npm/zero-md@3"></script>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
-        #login-form { text-align: center; margin-top: 100px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        /* 全体のダークモード設定 */
+        body { 
+            font-family: sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: #e0e0e0; 
+        }
+        /* ログインフォーム */
+        #login-form { 
+            text-align: center; 
+            margin-top: 100px; 
+            padding: 20px; 
+            background: #2d2d2d; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+        }
         #secret-content { display: none; }
-        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        /* 入力欄とボタン */
+        input { 
+            padding: 8px; 
+            border: 1px solid #444; 
+            border-radius: 4px; 
+            background: #3d3d3d; 
+            color: white; 
+        }
+        button { 
+            padding: 8px 16px; 
+            background: #375a7f; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        button:hover { background: #4b739d; }
+        /* リンク色（目に優しい青緑） */
+        a { color: #4db6ac; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        hr { border: 0; border-top: 1px solid #444; margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -18,22 +53,35 @@
         <h2>パスワードを入力してください</h2>
         <input type="password" id="pass">
         <button onclick="unlock()">閲覧する</button>
-        <p id="err" style="color: red;"></p>
+        <p id="err" style="color: #ff6b6b;"></p>
     </div>
 
     <div id="secret-content">
         <h1>📖 エクストラ徒然</h1>
-        <p>公開したいノートへのリンクをここに並べます</p>
+        <p>公開ノート一覧</p>
         <ul>
-            <li><a href="#" onclick="showNote('posts/diary2025.md')">2025年12月19日の日記</a></li>
+            <li><a href="#" onclick="showNote('posts/test.md')">テストノート（動作確認用）</a></li>
         </ul>
         <hr>
-        <zero-md id="viewer" src=""></zero-md>
+        <zero-md id="viewer" src="">
+            <template>
+                <style>
+                    .markdown-body { 
+                        background: transparent !important; 
+                        color: #e0e0e0 !important; 
+                    }
+                    /* リンクや引用の色を調整 */
+                    .markdown-body a { color: #4db6ac !important; }
+                    .markdown-body blockquote { border-left-color: #444 !important; color: #888 !important; }
+                </style>
+            </template>
+        </zero-md>
     </div>
 
     <script>
         function unlock() {
-            if (document.getElementById('pass').value === "0331") { // パスワード
+            // パスワードは「0331」のままです
+            if (document.getElementById('pass').value === "0331") { 
                 document.getElementById('login-form').style.display = 'none';
                 document.getElementById('secret-content').style.display = 'block';
             } else {
