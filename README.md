@@ -4,3 +4,4 @@
 - GitHub触ってみたい
 
 そんな欲求からこのサイトを作りました。
+URL:https://kei-sho-ryaku.github.io
