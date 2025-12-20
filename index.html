@@ -2,14 +2,24 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>動作確認</title>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/zero-md@3"></script>
+    <title>最終チェック</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/zero-md@3/dist/zero-md.min.js"></script>
 </head>
-<body style="background: #1a1a1a; color: white;">
+<body style="background: #1a1a1a; color: white; padding: 20px;">
 
-    <h1>テスト表示</h1>
+    <h1>🔍 接続テスト</h1>
     
-    <zero-md src="./posts/test.md"></zero-md>
+    <p>↓ここにノートが表示されるはずです</p>
+    <hr>
+
+    <zero-md id="test-viewer" src="./posts/test.md">
+        <template>
+            <style>.markdown-body { color: white; }</style>
+        </template>
+    </zero-md>
+
+    <hr>
+    <p>※何も出ない場合は、ファイル名が「test.md」で、「posts」フォルダに入っているか再確認してくださいね。</p>
 
 </body>
 </html>
