@@ -59,34 +59,48 @@
 
     <script>
         (function(){
-            const viewer = document.getElementById('viewer');
+            let viewer = document.getElementById('viewer');
             const link = document.querySelector('a[data-src]');
 
             async function loadMarkdown(path){
-                // まず手動で fetch を試みる (同一オリジンでは成功するはず)
+                // 手動で fetch を試みる
                 try{
                     const resp = await fetch(path, {cache: 'no-store'});
                     if(resp.ok){
                         const text = await resp.text();
-                        // script[type="text/markdown"] を作って viewer の中身を置換する
+
+                        // 新しい zero-md 要素を作って置換する（動的挿入時に確実にレンダリングされる）
+                        const newViewer = document.createElement('zero-md');
+                        newViewer.id = 'viewer';
+
+                        const tmpl = document.createElement('template');
+                        tmpl.innerHTML = `
+                            <style>
+                                :host{display:block}
+                                .markdown-body{ color:var(--fg); background:transparent }
+                                a{color:var(--accent)}
+                            </style>`;
+
                         const s = document.createElement('script');
                         s.type = 'text/markdown';
                         s.textContent = text;
-                        // clear src so zero-md uses internal script instead of fetching again
-                        viewer.removeAttribute('src');
-                        // remove existing children
-                        while(viewer.firstChild) viewer.removeChild(viewer.firstChild);
-                        viewer.appendChild(s);
+
+                        newViewer.appendChild(tmpl);
+                        newViewer.appendChild(s);
+
+                        viewer.parentNode.replaceChild(newViewer, viewer);
+                        viewer = newViewer;
                         return;
                     }
                 }catch(e){
-                    // fetch に失敗した場合は次のフォールバックで src を使う
+                    // fetch に失敗したら下のフォールバックを使う
                 }
-                // フォールバック: zero-md に src をセットして内部の loader に任せる
-                viewer.setAttribute('src', path);
+
+                // フォールバック: zero-md に src をセットして内部ローダーに任せる
+                if(viewer) viewer.setAttribute('src', path);
             }
 
-            // 初期表示（存在すれば手動 fetch を優先して読み込む）
+            // 初期表示
             loadMarkdown('./posts/test.md');
 
             // リンククリックで動的にロード
