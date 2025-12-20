@@ -1,25 +1,101 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>最終チェック</title>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/zero-md@3/dist/zero-md.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ブログ</title>
+    <style>
+        :root{
+            --bg:#1a1a1a;
+            --fg:#e0e0e0;
+            --muted:#9a9a9a;
+            --accent:#4aa3ff;
+        }
+        html,body{height:100%;}
+        body{
+            margin:0;
+            background:var(--bg);
+            color:var(--fg);
+            font-family:system-ui,-apple-system,Segoe UI,Roboto,'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            -webkit-font-smoothing:antialiased;
+            padding:24px;
+            box-sizing:border-box;
+        }
+        a{color:var(--accent); text-decoration:underline;}
+        header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+        nav a{margin-right:12px}
+        main{max-width:820px}
+        .meta{color:var(--muted);font-size:0.9rem;margin-bottom:12px}
+        zero-md{display:block}
+        /* zero-md 内のデフォルトスタイル補正 */
+        zero-md ::slotted(.markdown-body){ color:var(--fg) }
+    </style>
+    <!-- zero-md をモジュールで読み込み -->
+    <script type="module" src="https://unpkg.com/zero-md@3/dist/zero-md.min.js"></script>
 </head>
-<body style="background: #1a1a1a; color: white; padding: 20px;">
+<body>
+    <header>
+        <h1 style="margin:0;font-size:1.25rem">シンプルブログ</h1>
+        <nav>
+            <a href="#" data-src="./posts/test.md">posts/test.md を表示</a>
+        </nav>
+    </header>
 
-    <h1>🔍 接続テスト</h1>
-    
-    <p>↓ここにノートが表示されるはずです</p>
-    <hr>
+    <main>
+        <div class="meta">背景:#1a1a1a 文字:#e0e0e0 — zero-md で Markdown を表示します</div>
 
-    <zero-md id="test-viewer" src="./posts/test.md">
-        <template>
-            <style>.markdown-body { color: white; }</style>
-        </template>
-    </zero-md>
+        <zero-md id="viewer" src="./posts/test.md">
+            <template>
+                <style>
+                    :host{display:block}
+                    .markdown-body{ color:var(--fg); background:transparent }
+                    a{color:var(--accent)}
+                </style>
+            </template>
+        </zero-md>
 
-    <hr>
-    <p>※何も出ない場合は、ファイル名が「test.md」で、「posts」フォルダに入っているか再確認してくださいね。</p>
+        <p class="meta">リンクをクリックすると、その場で Markdown を読み込みます。もし自動読み込みに失敗した場合は、スクリプト側で fetch して内部に挿入するフォールバックを行います。</p>
+    </main>
 
+    <script>
+        (function(){
+            const viewer = document.getElementById('viewer');
+            const link = document.querySelector('a[data-src]');
+
+            async function loadMarkdown(path){
+                // まず手動で fetch を試みる (同一オリジンでは成功するはず)
+                try{
+                    const resp = await fetch(path, {cache: 'no-store'});
+                    if(resp.ok){
+                        const text = await resp.text();
+                        // script[type="text/markdown"] を作って viewer の中身を置換する
+                        const s = document.createElement('script');
+                        s.type = 'text/markdown';
+                        s.textContent = text;
+                        // clear src so zero-md uses internal script instead of fetching again
+                        viewer.removeAttribute('src');
+                        // remove existing children
+                        while(viewer.firstChild) viewer.removeChild(viewer.firstChild);
+                        viewer.appendChild(s);
+                        return;
+                    }
+                }catch(e){
+                    // fetch に失敗した場合は次のフォールバックで src を使う
+                }
+                // フォールバック: zero-md に src をセットして内部の loader に任せる
+                viewer.setAttribute('src', path);
+            }
+
+            // 初期表示（存在すれば手動 fetch を優先して読み込む）
+            loadMarkdown('./posts/test.md');
+
+            // リンククリックで動的にロード
+            link.addEventListener('click', function(e){
+                e.preventDefault();
+                const p = this.getAttribute('data-src');
+                if(p) loadMarkdown(p);
+            });
+        })();
+    </script>
 </body>
 </html>
